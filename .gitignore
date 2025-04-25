@@ -1,0 +1,8 @@
+# .gitignore
+__pycache__/
+*.pyc
+.env
+uploads/
+static/wordcloud.png
+*.DS_Store
+myvenv/

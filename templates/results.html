@@ -1,0 +1,262 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Analysis Results</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        :root {
+            /* Light mode variables */
+            --bg-primary: #f3f4f6; /* gray-100 */
+            --bg-card: #ffffff; /* white */
+            --bg-toolbar: #ffffff; /* white */
+            --bg-section: #f9fafb; /* gray-50 */
+            --bg-button: #4f46e5; /* indigo-600 */
+            --bg-button-hover: #4338ca; /* indigo-700 */
+            --bg-copy: #10b981; /* green-500 */
+            --bg-copy-hover: #059669; /* green-600 */
+            --bg-print: #3b82f6; /* blue-500 */
+            --bg-print-hover: #2563eb; /* blue-600 */
+            --text-primary: #1f2937; /* gray-800 */
+            --text-secondary: #4b5563; /* gray-600 */
+            --text-heading: #374151; /* gray-700 */
+        }
+
+        :root[data-theme="dark"] {
+            /* Dark mode variables */
+            --bg-primary: #1f2937; /* gray-800 */
+            --bg-card: #374151; /* gray-700 */
+            --bg-toolbar: #374151; /* gray-700 */
+            --bg-section: #4b5563; /* gray-600 */
+            --bg-button: #6366f1; /* indigo-500 */
+            --bg-button-hover: #4f46e5; /* indigo-600 */
+            --bg-copy: #10b981; /* green-500 */
+            --bg-copy-hover: #059669; /* green-600 */
+            --bg-print: #3b82f6; /* blue-500 */
+            --bg-print-hover: #2563eb; /* blue-600 */
+            --text-primary: #f3f4f6; /* gray-100 */
+            --text-secondary: #d1d5db; /* gray-300 */
+            --text-heading: #e5e7eb; /* gray-200 */
+        }
+
+        body {
+            background-color: var(--bg-primary);
+            color: var(--text-primary);
+            transition: background-color 0.3s, color 0.3s;
+        }
+
+        .card {
+            background-color: var(--bg-card);
+        }
+
+        .toolbar {
+            background-color: var(--bg-toolbar);
+        }
+
+        .section {
+            background-color: var(--bg-section);
+        }
+
+        .button {
+            background-color: var(--bg-button);
+        }
+
+        .button:hover {
+            background-color: var(--bg-button-hover);
+        }
+
+        .copy-button {
+            background-color: var(--bg-copy);
+        }
+
+        .copy-button:hover {
+            background-color: var(--bg-copy-hover);
+        }
+
+        .print-button {
+            background-color: var(--bg-print);
+        }
+
+        .print-button:hover {
+            background-color: var(--bg-print-hover);
+        }
+
+        .text-heading {
+            color: var(--text-heading);
+        }
+
+        .text-secondary {
+            color: var(--text-secondary);
+        }
+
+        .wordcloud-img {
+            max-width: 100%;
+            height: auto;
+        }
+
+        @media print {
+            button, a[href="/"], .toolbar { display: none !important; }
+            body { 
+                background: white !important; 
+                -webkit-print-color-adjust: exact; 
+                color: #000 !important; 
+                font-size: 12pt; 
+                margin: 0;
+            }
+            :root[data-theme="dark"] {
+                /* Override dark mode variables for printing */
+                --bg-primary: #ffffff !important;
+                --bg-card: #ffffff !important;
+                --bg-section: #ffffff !important;
+                --text-primary: #000000 !important;
+                --text-secondary: #333333 !important;
+                --text-heading: #000000 !important;
+            }
+            .card { 
+                box-shadow: none; 
+                padding: 0; 
+                margin: 0;
+                width: 100%;
+                max-width: 100%;
+                background: white !important;
+            }
+            .section {
+                background: white !important;
+                padding: 10pt;
+                margin-bottom: 10pt;
+            }
+            h1 { 
+                font-size: 16pt; 
+                margin-bottom: 20pt; 
+                text-align: center; 
+                color: #000 !important;
+            }
+            h2 { 
+                font-size: 14pt; 
+                margin-bottom: 8pt; 
+                color: #000 !important;
+            }
+            p { 
+                margin: 0 0 8pt 0; 
+                color: #333 !important; 
+            }
+            /* Force page break before Suggested Research Questions */
+            #suggested-research-questions {
+                page-break-before: always;
+            }
+            .wordcloud-section {
+                margin-top: 20pt;
+                text-align: center;
+            }
+            .wordcloud-img {
+                max-width: 500px; /* Fit to A4 page width */
+                height: auto;
+            }
+        }
+    </style>
+</head>
+<body class="min-h-screen flex flex-col items-center justify-center">
+    <!-- Toolbar -->
+    <div class="fixed top-4 right-4 flex items-center space-x-2 toolbar p-2 rounded shadow">
+        <button id="theme-toggle" class="px-2 py-1 bg-gray-200 rounded">🌓</button>
+        <select id="font-toggle" class="px-2 py-1 bg-gray-200 rounded">
+            <option value="small">A-</option>
+            <option value="base" selected>A</option>
+            <option value="large">A+</option>
+        </select>
+    </div>
+
+    <div class="max-w-2xl w-full mx-4 p-6 card rounded-lg shadow-lg">
+        <h1 class="text-3xl font-bold text-primary mb-6 text-center">
+            Analysis Results
+        </h1>
+
+        <!-- Copy + Print -->
+        <div class="flex justify-center space-x-4 mb-6">
+            <button onclick="copyResults()"
+                    class="px-4 py-2 copy-button text-white rounded transition">
+                📋 Copy Text
+            </button>
+            <button onclick="window.print()"
+                    class="px-4 py-2 print-button text-white rounded transition">
+                🖨️ Download as PDF
+            </button>
+        </div>
+
+        <div id="results-container" class="space-y-6">
+            <div class="p-4 section rounded-md">
+                <h2 class="text-xl font-semibold text-heading mb-2">Key Findings</h2>
+                <p class="text-secondary">{{ key_findings }}</p>
+            </div>
+            <div class="p-4 section rounded-md">
+                <h2 class="text-xl font-semibold text-heading mb-2">Methodologies</h2>
+                <p class="text-secondary">{{ methodologies }}</p>
+            </div>
+            <div class="p-4 section rounded-md">
+                <h2 class="text-xl font-semibold text-heading mb-2">Gaps in Research</h2>
+                <p class="text-secondary">{{ gaps }}</p>
+            </div>
+            <div id="suggested-research-questions" class="p-4 section rounded-md">
+                <h2 class="text-xl font-semibold text-heading mb-2">Suggested Research Questions</h2>
+                <p class="text-secondary">{{ research_questions }}</p>
+            </div>
+        </div>
+
+        <div class="mt-6 wordcloud-section">
+            <h2 class="text-xl font-semibold text-heading mb-2">Key Themes (Word Cloud)</h2>
+            <img src="{{ wordcloud_url }}" alt="Word Cloud" class="wordcloud-img">
+        </div>
+
+        <a href="/"
+           class="mt-6 inline-block py-2 px-6 button text-white rounded transition">
+            Upload Another Paper
+        </a>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const root = document.documentElement;
+            const themeToggle = document.getElementById('theme-toggle');
+            const fontToggle = document.getElementById('font-toggle');
+            const sizeMap = { small: '0.875rem', base: '1rem', large: '1.125rem' };
+
+            // Load saved theme
+            if (localStorage.getItem('theme') === 'dark') {
+                root.setAttribute('data-theme', 'dark');
+            }
+
+            // Load saved font size
+            const savedSize = localStorage.getItem('fontSize') || 'base';
+            root.style.fontSize = sizeMap[savedSize];
+            fontToggle.value = savedSize;
+
+            // Theme toggle handler
+            themeToggle.addEventListener('click', () => {
+                const currentTheme = root.getAttribute('data-theme') || 'light';
+                const newTheme = currentTheme === 'light' ? 'dark' : 'light';
+                root.setAttribute('data-theme', newTheme);
+                localStorage.setItem('theme', newTheme);
+                console.log('Theme toggled to:', newTheme); // Debug
+            });
+
+            // Font size toggle handler
+            fontToggle.addEventListener('change', (e) => {
+                const sz = e.target.value;
+                root.style.fontSize = sizeMap[sz];
+                localStorage.setItem('fontSize', sz);
+                console.log('Font size changed to:', sz); // Debug
+            });
+        });
+
+        function copyResults() {
+            const text = Array.from(document.querySelectorAll('#results-container p'))
+                              .map(p => p.innerText)
+                              .join('\n\n');
+            navigator.clipboard.writeText(text)
+                .then(() => alert('✅ Analysis copied!'))
+                .catch(() => alert('❌ Copy failed.'));
+        }
+    </script>
+</body>
+</html>

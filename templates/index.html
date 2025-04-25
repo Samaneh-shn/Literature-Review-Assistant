@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Literature Review Assistant</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        :root {
+            /* Light mode variables */
+            --bg-primary: #f3f4f6; /* gray-100 */
+            --bg-card: #ffffff; /* white */
+            --bg-toolbar: #ffffff; /* white */
+            --bg-button: #4f46e5; /* indigo-600 */
+            --bg-button-hover: #4338ca; /* indigo-700 */
+            --text-primary: #1f2937; /* gray-800 */
+            --text-secondary: #4b5563; /* gray-600 */
+            --text-label: #374151; /* gray-700 */
+            --text-error: #ef4444; /* red-500 */
+        }
+
+        :root[data-theme="dark"] {
+            /* Dark mode variables */
+            --bg-primary: #1f2937; /* gray-800 */
+            --bg-card: #374151; /* gray-700 */
+            --bg-toolbar: #374151; /* gray-700 */
+            --bg-button: #6366f1; /* indigo-500 */
+            --bg-button-hover: #4f46e5; /* indigo-600 */
+            --text-primary: #f3f4f6; /* gray-100 */
+            --text-secondary: #d1d5db; /* gray-300 */
+            --text-label: #e5e7eb; /* gray-200 */
+            --text-error: #f87171; /* red-400 */
+        }
+
+        body {
+            background-color: var(--bg-primary);
+            color: var(--text-primary);
+            transition: background-color 0.3s, color 0.3s;
+        }
+
+        .card {
+            background-color: var(--bg-card);
+        }
+
+        .toolbar {
+            background-color: var(--bg-toolbar);
+        }
+
+        .button {
+            background-color: var(--bg-button);
+        }
+
+        .button:hover {
+            background-color: var(--bg-button-hover);
+        }
+
+        .text-label {
+            color: var(--text-label);
+        }
+
+        .text-error {
+            color: var(--text-error);
+        }
+
+        .spinner {
+            display: none;
+            border: 4px solid #f3f3f3;
+            border-top: 4px solid #6366f1;
+            border-radius: 50%;
+            width: 24px;
+            height: 24px;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+    </style>
+</head>
+<body class="min-h-screen flex items-center justify-center">
+    <!-- Toolbar -->
+    <div class="fixed top-4 right-4 flex items-center space-x-2 toolbar p-2 rounded shadow">
+        <button id="theme-toggle" class="px-2 py-1 bg-gray-200 rounded">🌓</button>
+        <select id="font-toggle" class="px-2 py-1 bg-gray-200 rounded">
+            <option value="small">A-</option>
+            <option value="base" selected>A</option>
+            <option value="large">A+</option>
+        </select>
+    </div>
+
+    <div class="max-w-2xl w-full mx-4 p-6 card rounded-lg shadow-lg">
+        <h1 class="text-3xl font-bold text-primary mb-6 text-center">Literature Review Assistant</h1>
+        <div class="mb-6">
+            <form id="uploadForm" action="/upload" method="post" enctype="multipart/form-data" class="space-y-4">
+                <label for="file" class="block text-lg font-medium text-label">Upload one or more PDF papers</label>
+                <div class="flex items-center space-x-4">
+                    <input type="file" id="file" name="files" accept=".pdf" multiple required
+                           class="block w-full text-sm text-secondary file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:text-sm file:font-semibold file:bg-indigo-50 file:text-indigo-600 hover:file:bg-indigo-100">
+                    <button type="submit" id="submitBtn" class="py-2 px-6 button text-white font-semibold rounded-md transition duration-300">Analyze</button>
+                    <div id="spinner" class="spinner"></div>
+                </div>
+            </form>
+        </div>
+        {% if error %}
+            <p class="text-error text-sm mt-2">{{ error }}</p>
+        {% endif %}
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const root = document.documentElement;
+            const themeToggle = document.getElementById('theme-toggle');
+            const fontToggle = document.getElementById('font-toggle');
+            const sizeMap = { small: '0.875rem', base: '1rem', large: '1.125rem' };
+
+            // Load saved theme
+            if (localStorage.getItem('theme') === 'dark') {
+                root.setAttribute('data-theme', 'dark');
+            }
+
+            // Load saved font size
+            const savedSize = localStorage.getItem('fontSize') || 'base';
+            root.style.fontSize = sizeMap[savedSize];
+            fontToggle.value = savedSize;
+
+            // Theme toggle handler
+            themeToggle.addEventListener('click', () => {
+                const currentTheme = root.getAttribute('data-theme') || 'light';
+                const newTheme = currentTheme === 'light' ? 'dark' : 'light';
+                root.setAttribute('data-theme', newTheme);
+                localStorage.setItem('theme', newTheme);
+                console.log('Theme toggled to:', newTheme); // Debug
+            });
+
+            // Font size toggle handler
+            fontToggle.addEventListener('change', (e) => {
+                const sz = e.target.value;
+                root.style.fontSize = sizeMap[sz];
+                localStorage.setItem('fontSize', sz);
+                console.log('Font size changed to:', sz); // Debug
+            });
+
+            // Spinner for form submission
+            document.getElementById('uploadForm').addEventListener('submit', function() {
+                document.getElementById('submitBtn').disabled = true;
+                document.getElementById('spinner').style.display = 'inline-block';
+            });
+        });
+    </script>
+</body>
+</html>

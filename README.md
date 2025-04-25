@@ -32,7 +32,7 @@ This project showcases my skills in web development (Flask, HTML, CSS, JavaScrip
 - **Word Cloud Visualization**: Generates a word cloud to highlight key themes and terms from the summary.
 
 
-- **Export to PDF**: Download the analysis as a two-page PDF, with Suggested Research Questions and the word cloud on the second page.
+- **Export to PDF**: Download the analysis as a two-page PDF.
 
 
 - **Dark/Light Mode**: Toggle between dark and light themes for better readability.
